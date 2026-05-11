@@ -6,6 +6,7 @@ import { StageStepper } from "@/components/StageStepper";
 import { Stage1Frame } from "@/components/Stage1Frame";
 import { Stage2Log } from "@/components/Stage2Log";
 import { Stage3Twist } from "@/components/Stage3Twist";
+import { Stage4Loop } from "@/components/Stage4Loop";
 
 export default function Home() {
   const stage = useStore((s) => s.stage);
@@ -33,20 +34,9 @@ export default function Home() {
         ) : stage === 3 ? (
           <Stage3Twist />
         ) : (
-          <StagePlaceholder stage={stage} />
+          <Stage4Loop />
         )}
       </main>
-    </div>
-  );
-}
-
-function StagePlaceholder({ stage }: { stage: 4 }) {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-      <h2 className="text-2xl font-semibold tracking-tight">Stage {stage}</h2>
-      <p className="text-sm text-muted-foreground">
-        Coming up next — the log / twist / loop pipeline.
-      </p>
     </div>
   );
 }
