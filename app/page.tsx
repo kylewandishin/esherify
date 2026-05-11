@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { Logo } from "@/components/Logo";
 import { StageStepper } from "@/components/StageStepper";
 import { Stage1Frame } from "@/components/Stage1Frame";
+import { Stage2Log } from "@/components/Stage2Log";
 
 export default function Home() {
   const stage = useStore((s) => s.stage);
@@ -24,13 +25,19 @@ export default function Home() {
       </div>
 
       <main className="flex flex-1 flex-col items-center px-4 pb-12">
-        {stage === 1 ? <Stage1Frame /> : <StagePlaceholder stage={stage} />}
+        {stage === 1 ? (
+          <Stage1Frame />
+        ) : stage === 2 ? (
+          <Stage2Log />
+        ) : (
+          <StagePlaceholder stage={stage} />
+        )}
       </main>
     </div>
   );
 }
 
-function StagePlaceholder({ stage }: { stage: 2 | 3 | 4 }) {
+function StagePlaceholder({ stage }: { stage: 3 | 4 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
       <h2 className="text-2xl font-semibold tracking-tight">Stage {stage}</h2>
