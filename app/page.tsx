@@ -1,13 +1,42 @@
+"use client";
+
+import { useStore } from "@/lib/store";
 import { Logo } from "@/components/Logo";
+import { StageStepper } from "@/components/StageStepper";
+import { Stage1Frame } from "@/components/Stage1Frame";
 
 export default function Home() {
+  const stage = useStore((s) => s.stage);
+
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
-      <Logo className="size-20 text-foreground" title="Esherify" />
-      <h1 className="text-4xl font-semibold tracking-tight">Esherify</h1>
-      <p className="max-w-md text-base text-muted-foreground">
-        Turn any Droste image into an MC Escher spiral, right in your browser.
+    <div className="flex min-h-screen flex-col">
+      <header className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex items-center gap-2">
+          <Logo className="size-6 text-foreground" title="Esherify" />
+          <span className="text-sm font-semibold tracking-tight">
+            Esherify
+          </span>
+        </div>
+      </header>
+
+      <div className="px-4 py-6">
+        <StageStepper />
+      </div>
+
+      <main className="flex flex-1 flex-col items-center px-4 pb-12">
+        {stage === 1 ? <Stage1Frame /> : <StagePlaceholder stage={stage} />}
+      </main>
+    </div>
+  );
+}
+
+function StagePlaceholder({ stage }: { stage: 2 | 3 | 4 }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+      <h2 className="text-2xl font-semibold tracking-tight">Stage {stage}</h2>
+      <p className="text-sm text-muted-foreground">
+        Coming up next — the log / twist / loop pipeline.
       </p>
-    </main>
+    </div>
   );
 }
