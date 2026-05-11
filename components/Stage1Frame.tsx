@@ -69,6 +69,7 @@ export function Stage1Frame() {
           inner={inner}
           onOuterChange={setOuter}
           onInnerChange={setInner}
+          fixedPoint={params ? params.center : null}
         />
       </div>
       <DrosteBadge params={params} />
