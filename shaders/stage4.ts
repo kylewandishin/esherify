@@ -1,15 +1,17 @@
 // Stage 4 — full Escher pipeline.
-// Each output pixel becomes a complex z (relative to screen center), is
+// The canvas covers a square region of radius u_viewRadius around the spiral
+// fixed point, expressed in IMAGE pixel coordinates (not screen pixels — that
+// was the bug). Each screen pixel becomes a complex z in image coords, is
 // log-mapped to w, animated by shifting w.x by t·ln(r), twisted by β = α/ln r,
-// wrapped to one period in log space (so the spiral closes), then mapped
-// back via exp and sampled.
+// wrapped modulo one Droste period so the spiral closes, then mapped back via
+// exp and sampled.
 export const STAGE4_ESCHER_FRAG = /* glsl */ `#version 300 es
 precision highp float;
 
 uniform sampler2D u_image;
 uniform vec2  u_imageSize;
 uniform vec2  u_center;
-uniform vec2  u_outputSize;
+uniform float u_viewRadius;
 uniform float u_lnR;
 uniform float u_theta;
 uniform float u_uMin;
@@ -31,8 +33,10 @@ vec2 cexp(vec2 w) {
 }
 
 void main() {
-  vec2 pix = v_uv * u_outputSize;
-  vec2 z = pix - u_outputSize * 0.5;
+  // Screen UV [0,1]² -> image-coord complex z, centered, square aspect.
+  vec2 zNorm = v_uv * 2.0 - 1.0;
+  vec2 z = zNorm * u_viewRadius;
+
   vec2 w = clog(z);
 
   // Animate by translating along the log-radial axis.
@@ -42,8 +46,7 @@ void main() {
   vec2 beta = vec2(1.0, u_theta / u_lnR);
   w = cmul(w, beta);
 
-  // Wrap into one Droste period (relative to the inner-box base radius)
-  // so the spiral closes on itself for the seamless zoom loop.
+  // Wrap into one Droste period so the spiral closes on itself.
   w.x = u_uMin + mod(w.x - u_uMin, u_lnR);
 
   vec2 zp = cexp(w);

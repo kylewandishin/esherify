@@ -18,19 +18,29 @@ export function Stage4Loop() {
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [duration, setDuration] = useState(4);
+  const [zoom, setZoom] = useState(1);
 
   const params = useMemo(() => drosteFromBoxes(outer, inner), [outer, inner]);
 
   const uniforms = useMemo<Uniforms | undefined>(() => {
     if (!params) return undefined;
-    const uMin = Math.log(Math.max(inner.w, inner.h) / 2);
+    // Inner radius from the fixed point, in image pixels. Approximate with
+    // half the inner box's smaller dimension — exact when the inner box is
+    // centered on the fixed point (the symmetric Droste case).
+    const innerRadius = Math.min(inner.w, inner.h) / 2;
+    const uMin = Math.log(innerRadius);
+    // Canvas covers a square region of this radius around the fixed point.
+    // Default: outer-box half-width, scaled by the user's zoom.
+    const outerRadius = Math.max(outer.w, outer.h) / 2;
+    const viewRadius = outerRadius * zoom;
     return {
       u_center: [params.center.x, params.center.y],
+      u_viewRadius: viewRadius,
       u_lnR: params.lnR,
       u_theta: twist,
       u_uMin: uMin,
     };
-  }, [params, inner.w, inner.h, twist]);
+  }, [params, inner.w, inner.h, outer.w, outer.h, twist, zoom]);
 
   if (!image || !params || !uniforms) {
     return (
@@ -86,11 +96,37 @@ export function Stage4Loop() {
             </span>
           </div>
         </div>
+
+        <div className="flex w-full items-center gap-3">
+          <span className="font-mono text-xs text-muted-foreground">zoom</span>
+          <Slider
+            value={[zoom]}
+            min={0.25}
+            max={4}
+            step={0.05}
+            onValueChange={(value: number | readonly number[]) => {
+              const v = Array.isArray(value) ? value[0] : value;
+              setZoom(v as number);
+            }}
+            className="flex-1"
+          />
+          <span className="font-mono text-xs tabular-nums">
+            {zoom.toFixed(2)}×
+          </span>
+        </div>
+
         <p className="max-w-2xl text-center text-xs text-muted-foreground">
-          <span className="font-mono">exp</span> undoes{" "}
-          <span className="font-mono">log</span>, but the twist remains — the
-          spiral closes on itself, so zooming in cycles forever. θ ={" "}
-          {twist.toFixed(3)} rad, period {params.lnR.toFixed(3)} in log radius.
+          The canvas covers a square radius of{" "}
+          <span className="font-mono">
+            {Math.round((Math.max(outer.w, outer.h) / 2) * zoom)}
+          </span>{" "}
+          image px around the fixed point{" "}
+          <span className="font-mono">
+            ({Math.round(params.center.x)},{" "}
+            {Math.round(params.center.y)})
+          </span>
+          . θ = {twist.toFixed(3)} rad, period ln&nbsp;r ={" "}
+          {params.lnR.toFixed(3)}.
         </p>
       </section>
     </div>
