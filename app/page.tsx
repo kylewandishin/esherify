@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { StageStepper } from "@/components/StageStepper";
 import { Stage1Frame } from "@/components/Stage1Frame";
 import { Stage2Log } from "@/components/Stage2Log";
+import { Stage3Twist } from "@/components/Stage3Twist";
 
 export default function Home() {
   const stage = useStore((s) => s.stage);
@@ -29,6 +30,8 @@ export default function Home() {
           <Stage1Frame />
         ) : stage === 2 ? (
           <Stage2Log />
+        ) : stage === 3 ? (
+          <Stage3Twist />
         ) : (
           <StagePlaceholder stage={stage} />
         )}
@@ -37,7 +40,7 @@ export default function Home() {
   );
 }
 
-function StagePlaceholder({ stage }: { stage: 3 | 4 }) {
+function StagePlaceholder({ stage }: { stage: 4 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
       <h2 className="text-2xl font-semibold tracking-tight">Stage {stage}</h2>
