@@ -173,6 +173,8 @@ interface BoxEditorProps {
   inner: Box;
   onOuterChange: (b: Box) => void;
   onInnerChange: (b: Box) => void;
+  /** Optional fixed-point marker in image pixel coordinates. */
+  fixedPoint?: { x: number; y: number } | null;
   className?: string;
 }
 
@@ -184,6 +186,7 @@ export function BoxEditor({
   inner,
   onOuterChange,
   onInnerChange,
+  fixedPoint,
   className,
 }: BoxEditorProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -223,6 +226,18 @@ export function BoxEditor({
             onChange={onInnerChange}
             label="inner box"
           />
+          {fixedPoint &&
+          Number.isFinite(fixedPoint.x) &&
+          Number.isFinite(fixedPoint.y) ? (
+            <div
+              aria-label="spiral fixed point"
+              className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-yellow-400 shadow"
+              style={{
+                left: `${(fixedPoint.x / imgW) * 100}%`,
+                top: `${(fixedPoint.y / imgH) * 100}%`,
+              }}
+            />
+          ) : null}
         </>
       ) : null}
     </div>
